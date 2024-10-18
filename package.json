@@ -15,14 +15,7 @@
         "test": "vitest",
         "test:watch": "vitest --watch"
     },
-    "keywords": [
-        "cli",
-        "git",
-        "github",
-        "pr",
-        "description",
-        "chatgpt"
-    ],
+    "keywords": ["cli", "git", "github", "pr", "description", "chatgpt"],
     "author": "Oleg Petrov <fyvfyv@fyvfyv.com>",
     "license": "ISC",
     "devDependencies": {
