@@ -13,7 +13,14 @@
         "type-check": "tsc --noEmit",
         "format": "biome check --write ./"
     },
-    "keywords": ["cli", "git", "github", "pr", "description", "chatgpt"],
+    "keywords": [
+        "cli",
+        "git",
+        "github",
+        "pr",
+        "description",
+        "chatgpt"
+    ],
     "author": "Oleg Petrov <fyvfyv@fyvfyv.com>",
     "license": "ISC",
     "devDependencies": {
@@ -21,5 +28,9 @@
         "@types/node": "^22.7.6",
         "esbuild": "^0.24.0",
         "typescript": "^5.6.3"
+    },
+    "dependencies": {
+        "chalk": "^5.3.0",
+        "simple-git": "^3.27.0"
     }
 }
