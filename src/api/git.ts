@@ -56,4 +56,28 @@ export class GitService {
             process.exit(1);
         }
     }
+
+    public async getCommitTitle(
+        baseBranch: string,
+        branchName: string,
+    ): Promise<string> {
+        try {
+            const log = await this.api.log({
+                from: branchName,
+                to: baseBranch,
+            });
+
+            if (!log.all.length) {
+                throw new Error(`No commits found on branch ${branchName}`);
+            }
+
+            return log.all[log.all.length - 1].message.split('\n')[0]; // First line is the commit title
+        } catch (error) {
+            console.error(
+                `Error fetching commits for branch ${branchName}:`,
+                error,
+            );
+            throw error;
+        }
+    }
 }

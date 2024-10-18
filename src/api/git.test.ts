@@ -146,4 +146,30 @@ describe('GitService', () => {
             expect(mockExit).toHaveBeenCalledWith(1);
         });
     });
+
+    describe('getCommitTitle', () => {
+        let mockBranch: MockInstance;
+
+        beforeEach(() => {
+            mockBranch = vi.spyOn(SimpleGit, 'branch');
+        });
+
+        afterEach(() => {
+            mockBranch.mockRestore();
+        });
+
+        it('should return the current branch name', async () => {
+            mockBranch.mockResolvedValueOnce({
+                current: 'main',
+            } as BranchSummary);
+            const branchName = await gitService.getBranchName();
+            expect(branchName).toBe('main');
+        });
+
+        it('should exit with an error if branch command fails', async () => {
+            mockBranch.mockImplementationOnce(() => Promise.reject());
+            await gitService.getBranchName();
+            expect(mockExit).toHaveBeenCalledWith(1);
+        });
+    });
 });
