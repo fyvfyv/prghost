@@ -1,14 +1,18 @@
-import chalk from 'chalk';
-import { getBranchName, getRepoInfo } from './git';
+import { GitService } from './api/git';
+import { envs } from './utils/envs';
 
 async function run() {
-    const currentBranch = await getBranchName();
-    const repoInfo = await getRepoInfo();
+    const tokens = envs();
 
-    console.log('Current branch: ', chalk.bold.green(currentBranch));
-    console.log('Repo info: ', chalk.bold.green(JSON.stringify(repoInfo)));
+    const gitService = new GitService();
 
-    return currentBranch;
+    const currentBranch = await gitService.getBranchName();
+    const repoInfo = await gitService.getRepoInfo();
+
+    if (!repoInfo) {
+        console.error('Error: Repository information not found');
+        process.exit(1);
+    }
 }
 
 run();
