@@ -1,9 +1,12 @@
 import chalk from 'chalk';
-import { getBranchName } from './utils/get-branch-name';
+import { getBranchName, getRepoInfo } from './git';
 
 async function run() {
     const currentBranch = await getBranchName();
-    console.log('Current branch:', chalk.bold.green(currentBranch));
+    const repoInfo = await getRepoInfo();
+
+    console.log('Current branch: ', chalk.bold.green(currentBranch));
+    console.log('Repo info: ', chalk.bold.green(JSON.stringify(repoInfo)));
 
     return currentBranch;
 }
