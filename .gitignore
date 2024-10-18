@@ -1,0 +1,16 @@
+/node_modules
+/dist
+
+.DS_Store
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# pnpm specific
+pnpm-debug.log
