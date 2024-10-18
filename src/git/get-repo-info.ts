@@ -1,7 +1,7 @@
 import { SimpleGit } from '../api/simple-git';
 
 export const getRepoInfo = async (): Promise<
-    { owner: string; repo: string } | undefined
+    { owner: string; repo: string; baseBranch: string } | undefined
 > => {
     try {
         const remotes = await SimpleGit.getRemotes(true);
@@ -17,13 +17,21 @@ export const getRepoInfo = async (): Promise<
         const regex = /[:\/]([^\/]+)\/(.+)\.git$/;
         const match = remoteUrl.match(regex);
 
-        if (match && match.length >= 3) {
-            const owner = match[1];
-            const repo = match[2];
-            return { owner, repo };
+        if (!match || match.length < 3) {
+            throw new Error(
+                'Failed to parse repository name and owner from URL',
+            );
         }
 
-        throw new Error('Failed to parse repository name and owner from URL');
+        const owner = match[1];
+        const repo = match[2];
+
+        const remoteShowOutput = await SimpleGit.raw(['remote', 'show', 'origin']);
+
+        const baseBranchMatch = remoteShowOutput.match(/HEAD branch: (.+)/);
+        const baseBranch = baseBranchMatch ? baseBranchMatch[1] : 'main';
+
+        return { owner, repo, baseBranch };
     } catch (error) {
         console.error('Error: ', error);
         process.exit(1);
