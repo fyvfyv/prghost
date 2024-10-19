@@ -1,10 +1,10 @@
 {
-    "name": "fill-pr-description",
+    "name": "prghost",
     "version": "1.0.0",
     "description": "A CLI tool to auto-fill PR descriptions based on git diff and guidelines",
     "main": "dist/index.js",
     "bin": {
-        "fill-pr": "./dist/index.js"
+        "run": "./dist/index.js"
     },
     "scripts": {
         "build": "npm run type-check && node esbuild.config.js",
