@@ -5,21 +5,6 @@ import { SimpleGit } from './simple-git';
 
 describe('GitService', () => {
     const gitService = new GitService();
-    let mockExit: MockInstance;
-    let mockConsoleError: MockInstance;
-
-    beforeEach(() => {
-        mockExit = vi
-            .spyOn(process, 'exit')
-            .mockImplementation(() => undefined as never);
-
-        mockConsoleError = vi.spyOn(console, 'error');
-    });
-
-    afterEach(() => {
-        mockExit.mockRestore();
-        mockConsoleError.mockRestore();
-    });
 
     describe('getBranchName', () => {
         let mockBranch: MockInstance;
@@ -41,9 +26,8 @@ describe('GitService', () => {
         });
 
         it('should exit with an error if branch command fails', async () => {
-            mockBranch.mockImplementationOnce(() => Promise.reject());
-            await gitService.getBranchName();
-            expect(mockExit).toHaveBeenCalledWith(1);
+            mockBranch.mockRejectedValueOnce('Error');
+            await expect(gitService.getBranchName()).rejects.toThrow('Error');
         });
     });
 
@@ -106,14 +90,9 @@ describe('GitService', () => {
                 },
             ];
             mockGetRemotes.mockResolvedValueOnce(remotes);
-            const result = await gitService.getRepoInfo();
-
-            expect(result).toBeUndefined();
-            expect(mockConsoleError).toHaveBeenCalledWith(
-                'Error: ',
-                new Error('No remote named origin found'),
+            await expect(gitService.getRepoInfo()).rejects.toThrow(
+                'No remote named origin found',
             );
-            expect(mockExit).toHaveBeenCalledWith(1);
         });
 
         it('should throw an error if the remote URL is not valid', async () => {
@@ -124,52 +103,56 @@ describe('GitService', () => {
                 },
             ];
             mockGetRemotes.mockResolvedValueOnce(remotes);
-            const result = await gitService.getRepoInfo();
-
-            expect(result).toBeUndefined();
-            expect(mockConsoleError).toHaveBeenCalledWith(
-                'Error: ',
-                new Error('Failed to parse repository name and owner from URL'),
+            await expect(gitService.getRepoInfo()).rejects.toThrow(
+                'Failed to parse repository name and owner from URL',
             );
-            expect(mockExit).toHaveBeenCalledWith(1);
         });
 
         it('should handle the error when getRemotes throws an exception', async () => {
             mockGetRemotes.mockRejectedValueOnce(new Error('getRemotes error'));
-            const result = await gitService.getRepoInfo();
-
-            expect(result).toBeUndefined();
-            expect(mockConsoleError).toHaveBeenCalledWith(
-                'Error: ',
-                new Error('getRemotes error'),
+            await expect(gitService.getRepoInfo()).rejects.toThrow(
+                'getRemotes error',
             );
-            expect(mockExit).toHaveBeenCalledWith(1);
         });
     });
 
     describe('getCommitTitle', () => {
-        let mockBranch: MockInstance;
+        let mockLog: MockInstance;
 
         beforeEach(() => {
-            mockBranch = vi.spyOn(SimpleGit, 'branch');
+            mockLog = vi.spyOn(SimpleGit, 'log');
         });
 
         afterEach(() => {
-            mockBranch.mockRestore();
+            mockLog.mockRestore();
         });
 
-        it('should return the current branch name', async () => {
-            mockBranch.mockResolvedValueOnce({
-                current: 'main',
-            } as BranchSummary);
-            const branchName = await gitService.getBranchName();
-            expect(branchName).toBe('main');
+        it('should return the oldest commit title', async () => {
+            mockLog.mockResolvedValueOnce({
+                all: [
+                    { message: 'Second commit\n\nBody' },
+                    { message: 'First commit\n\nBody' },
+                ],
+            });
+            const title = await gitService.getCommitTitle(
+                'main',
+                'feature-branch',
+            );
+            expect(title).toBe('First commit');
         });
 
-        it('should exit with an error if branch command fails', async () => {
-            mockBranch.mockImplementationOnce(() => Promise.reject());
-            await gitService.getBranchName();
-            expect(mockExit).toHaveBeenCalledWith(1);
+        it('should exit with an error if commits command fails', async () => {
+            mockLog.mockRejectedValueOnce('Error');
+            await expect(
+                gitService.getCommitTitle('main', 'feature-branch'),
+            ).rejects.toThrow('Error');
+        });
+
+        it('should throw an error if no commits are found', async () => {
+            mockLog.mockResolvedValueOnce({ all: [] });
+            await expect(
+                gitService.getCommitTitle('main', 'feature-branch'),
+            ).rejects.toThrow('No commits found on branch feature-branch');
         });
     });
 });

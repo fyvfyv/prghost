@@ -99,13 +99,8 @@ export class OpenAIService {
     }
 
     private async fetchModelsList(): Promise<string[]> {
-        try {
-            const models = await this.api.models.list();
-            return models.data.map((model) => model.id);
-        } catch (error) {
-            console.error('Error getting models list');
-            throw error;
-        }
+        const models = await this.api.models.list();
+        return models.data.map((model) => model.id);
     }
 }
 

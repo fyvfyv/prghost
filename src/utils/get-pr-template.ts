@@ -12,9 +12,7 @@ export function getPRTemplate(): string | undefined {
     );
 
     if (fs.existsSync(targetFilePath)) {
-        console.log(
-            `Found ${TARGET_FILE} in the current directory: ${currentDir}`,
-        );
+        console.log('ℹ️ Found PR template file. Using it.');
         return fs.readFileSync(targetFilePath, 'utf-8');
     }
 

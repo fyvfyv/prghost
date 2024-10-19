@@ -38,71 +38,51 @@ export class GitHubService {
     }
 
     public async getPRDiff(prNumber: number): Promise<string> {
-        try {
-            const { data: diff } = await this.api.pulls.get({
-                owner: this.owner,
-                repo: this.repo,
-                pull_number: prNumber,
-                mediaType: {
-                    format: 'diff',
-                },
-            });
+        const { data: diff } = await this.api.pulls.get({
+            owner: this.owner,
+            repo: this.repo,
+            pull_number: prNumber,
+            mediaType: {
+                format: 'diff',
+            },
+        });
 
-            return diff as unknown as string;
-        } catch (error) {
-            console.error('Error getting PR diff:', error);
-            throw error;
-        }
+        return diff as unknown as string;
     }
 
     public async setPRDescription(
         prNumber: number,
         description: string,
     ): Promise<void> {
-        try {
-            await this.api.pulls.update({
-                owner: this.owner,
-                repo: this.repo,
-                pull_number: prNumber,
-                body: description,
-            });
-        } catch (error) {
-            console.error('Error setting PR description:', error);
-            throw error;
-        }
+        await this.api.pulls.update({
+            owner: this.owner,
+            repo: this.repo,
+            pull_number: prNumber,
+            body: description,
+        });
     }
 
     private async createPR(branchName: string, title: string): Promise<number> {
-        try {
-            const { data: newPR } = await this.api.pulls.create({
-                owner: this.owner,
-                repo: this.repo,
-                head: branchName,
-                base: this.baseBranch,
-                title,
-            });
+        const { data: newPR } = await this.api.pulls.create({
+            owner: this.owner,
+            repo: this.repo,
+            head: branchName,
+            base: this.baseBranch,
+            title,
+        });
 
-            return newPR.number;
-        } catch (error) {
-            console.error('Error creating PR:', error);
-            throw error;
-        }
+        return newPR.number;
     }
 
     private async getPRNumberByBranchName(
         branchName: string,
     ): Promise<number | null> {
-        try {
-            const { data: prs } = await this.api.pulls.list({
-                owner: this.owner,
-                repo: this.repo,
-                head: `${this.owner}:${branchName}`,
-            });
+        const { data: prs } = await this.api.pulls.list({
+            owner: this.owner,
+            repo: this.repo,
+            head: `${this.owner}:${branchName}`,
+        });
 
-            return prs?.[0]?.number || null;
-        } catch (error) {
-            console.error(`Error fetching PR for branch ${branchName}:`, error);
-            throw error;
-        }
+        return prs?.[0]?.number || null;
     }
 }
