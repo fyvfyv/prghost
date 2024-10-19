@@ -11,7 +11,8 @@
         "start": "node dist/index.js",
         "dev": "npm run type-check && node esbuild.config.js && node dist/index.js",
         "type-check": "tsc --noEmit",
-        "format": "biome check --write ./",
+        "lint": "biome check --write ./",
+        "format": "biome check --fix --unsafe ./",
         "test": "vitest",
         "test:watch": "vitest --watch"
     },
@@ -27,7 +28,9 @@
     },
     "dependencies": {
         "@octokit/rest": "^21.0.2",
+        "@types/common-tags": "^1.8.4",
         "chalk": "^5.3.0",
+        "common-tags": "^1.8.2",
         "dotenv": "^16.4.5",
         "simple-git": "^3.27.0"
     },
