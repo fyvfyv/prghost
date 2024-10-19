@@ -19,7 +19,7 @@
     },
     "keywords": ["cli", "git", "github", "pr", "description", "chatgpt"],
     "author": "Oleg Petrov <fyvfyv@fyvfyv.com>",
-    "license": "ISC",
+    "license": "MIT",
     "devDependencies": {
         "@biomejs/biome": "^1.9.4",
         "@types/node": "^22.7.6",
