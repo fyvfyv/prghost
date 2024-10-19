@@ -3,13 +3,15 @@
     "version": "1.0.0",
     "description": "Tool that auto-generates PR descriptions from git diffs using AI and project guidelines",
     "main": "dist/index.js",
-    "bin": "dist/index.js",
+    "bin": {
+        "prghost": "dist/index.js"
+    },
     "engines": {
         "node": ">=20"
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/fyvfyv/prghost.git"
+        "url": "git+https://github.com/fyvfyv/prghost.git"
     },
     "homepage": "https://github.com/fyvfyv/prghost/blob/main/README.md",
     "scripts": {
