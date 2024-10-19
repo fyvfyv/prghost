@@ -1,3 +1,5 @@
+[![npm version](https://badge.fury.io/js/prghost.svg)](https://badge.fury.io/js/prghost)
+
 # AI-Generated Pull Request Description
 
 This repo contains a script that uses AI to automatically create helpful pull request (PR) descriptions based on the changes (diff), guidelines, and templates in the repo. It utilizes OpenAI to generate clear, concise summaries, making it easier for teams to collaborate and review code.
