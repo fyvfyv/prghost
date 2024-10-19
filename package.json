@@ -13,8 +13,8 @@
         "type-check": "tsc --noEmit",
         "lint": "biome check --write ./",
         "format": "biome check --fix --unsafe ./",
-        "test": "vitest",
-        "test:watch": "vitest --watch"
+        "test": "vitest --run --silent",
+        "test:watch": "vitest"
     },
     "keywords": ["cli", "git", "github", "pr", "description", "chatgpt"],
     "author": "Oleg Petrov <fyvfyv@fyvfyv.com>",
