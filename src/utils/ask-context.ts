@@ -5,7 +5,7 @@ const rl = readline.createInterface({
     output: process.stdout,
 });
 
-export const askForContext = () => {
+export const askForContext = (): Promise<string | undefined> => {
     return new Promise((resolve) => {
         rl.question('Please write some context: ', (inputText) => {
             rl.close();
