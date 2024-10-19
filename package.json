@@ -6,6 +6,9 @@
     "bin": {
         "run": "./dist/index.js"
     },
+    "engines": {
+        "node": ">=20"
+    },
     "scripts": {
         "build": "npm run type-check && node esbuild.config.js",
         "start": "node dist/index.js",

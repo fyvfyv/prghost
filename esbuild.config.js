@@ -25,6 +25,7 @@ async function buildAndCopy() {
                 js: '#!/usr/bin/env node',
             },
             sourcemap: false,
+            minify: true,
         });
 
         console.log('Build completed.');
