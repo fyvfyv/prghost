@@ -44,10 +44,7 @@ describe('GitHubService', () => {
             vi.spyOn(api.pulls, 'list').mockRejectedValue(mockError);
 
             await expect(
-              githubService.getOrCreatePR(
-                branchName,
-                'PR Title',
-              )
+                githubService.getOrCreatePR(branchName, 'PR Title'),
             ).rejects.toThrow('GitHub API error');
         });
 
@@ -59,10 +56,7 @@ describe('GitHubService', () => {
                 data: [],
             } as any);
 
-            vi.spyOn(
-              api.pulls,
-                'create',
-            ).mockResolvedValueOnce({
+            vi.spyOn(api.pulls, 'create').mockResolvedValueOnce({
                 data: { number: prNumber },
             } as any);
 
@@ -82,16 +76,10 @@ describe('GitHubService', () => {
                 data: [],
             } as any);
 
-            vi.spyOn(
-              api.pulls,
-              'create',
-            ).mockRejectedValue(mockError);
+            vi.spyOn(api.pulls, 'create').mockRejectedValue(mockError);
 
             await expect(
-              githubService.getOrCreatePR(
-                branchName,
-                'PR Title',
-              )
+                githubService.getOrCreatePR(branchName, 'PR Title'),
             ).rejects.toThrow('GitHub API error');
         });
     });

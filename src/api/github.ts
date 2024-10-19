@@ -56,8 +56,8 @@ export class GitHubService {
     }
 
     public async setPRDescription(
-      prNumber: number,
-      description: string,
+        prNumber: number,
+        description: string,
     ): Promise<void> {
         try {
             await this.api.pulls.update({
