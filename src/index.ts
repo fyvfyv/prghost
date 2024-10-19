@@ -1,5 +1,6 @@
 import { GitService } from './api/git';
 import { GitHubService } from './api/github';
+import { OpenAIService } from './api/openai';
 import { askForContext } from './utils/ask-context';
 import { envs } from './utils/envs';
 import { getPRTemplate } from './utils/get-pr-template';
@@ -47,9 +48,19 @@ async function run() {
         prTemplate,
     });
 
-    console.log(prompt);
+    const openAIService = new OpenAIService(tokens.openai);
 
-    return currentBranch;
+    const description = await openAIService.getPRDescription(prompt, {
+        withContext: !!context,
+        withTemplate: !!prTemplate,
+    });
+
+    if (!description) {
+        console.error('Error: PR description not generated');
+        process.exit(1);
+    }
+
+    await githubService.setPRDescription(prNumber, description);
 }
 
 run();
