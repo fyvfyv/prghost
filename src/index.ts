@@ -1,6 +1,8 @@
 import { GitService } from './api/git';
 import { GitHubService } from './api/github';
+import { askForContext } from './utils/ask-context';
 import { envs } from './utils/envs';
+import { getGuidelines } from './utils/guidelines/get-guidelines';
 
 async function run() {
     const tokens = envs();
@@ -30,6 +32,10 @@ async function run() {
     if (!prNumber) {
         return;
     }
+
+    const context = await askForContext();
+    const guidelines = getGuidelines();
+    const diff = await githubService.getPRDiff(prNumber);
 
     return currentBranch;
 }
