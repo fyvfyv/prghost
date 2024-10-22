@@ -1,6 +1,6 @@
 {
     "name": "prghost",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Tool that auto-generates PR descriptions from git diffs using AI and project guidelines",
     "main": "dist/index.js",
     "bin": {

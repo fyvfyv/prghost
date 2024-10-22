@@ -39,11 +39,13 @@ const MODELS_PRIORITY = [
 Before running the script, ensure you have the following:
 
 1. **GitHub Token**: A GitHub token is required to interact with the GitHub API.
-   - Set your GitHub token in the environment variable `GITHUB_TOKEN` or define it in the `.env` file located in the root of the repository.
+   - Set your GitHub token in the environment variable `GITHUB_TOKEN` or define it in the `.env` file **located in the root of the target repository where the script is executed**, not the script's folder.
 
 2. **OpenAI Token**: An OpenAI API token is required to generate the PR descriptions.
-   - Set your OpenAI token in the environment variable `OPENAI_TOKEN` or define it in the `.env` file.
+   - Set your OpenAI token in the environment variable `OPENAI_TOKEN` or define it in the `.env` file **located in the root of the target repository where the script is executed**, not the script's folder.
    - Ensure your `OPENAI_TOKEN` has access to one of the AI models listed above.
+
+> **Important**: The `.env` file, containing both `GITHUB_TOKEN` and `OPENAI_TOKEN`, must be located in the **target repository** (the repository where the script will be run). Do not place these tokens in the `.env` file of the script's folder.
 
 ## Usage
 
@@ -55,12 +57,15 @@ To run the script, follow these steps:
 2. Ensure there is a PR template:
    - Check if the `.github/pull_request_template.md` file exists in your repository. This template will be used to structure the PR description. If not, the script will generate a more flexible PR description.
 
-3. Run the script:
+3. **Ensure your `.env` file in the target repository is correctly set up**:
+   - Add both `GITHUB_TOKEN` and `OPENAI_TOKEN` to the `.env` file located in the root of the repository where the script is being executed.
+
+4. Run the script:
    ```bash
    npx prghost run
    ```
 
-4. The script will:
+5. The script will:
    - Retrieve the current branch name and repository information.
    - Get or create the corresponding PR.
    - Ask for additional context for the PR (if needed). This context will be used in prompt generation.
@@ -69,15 +74,15 @@ To run the script, follow these steps:
    - Use the guidelines, template, and diff to generate a prompt for OpenAI.
    - Generate a PR description and update it on GitHub.
 
-5. After successful execution, the script will automatically update the PR description on GitHub with the generated text.
+6. After successful execution, the script will automatically update the PR description on GitHub with the generated text.
 
 ## Configuration
 
 - **PR Guidelines**: Located in `.pr_guidelines.md` in the root of the repository. If this file is missing, the script will use a [fallback](src/utils/guidelines/.pr_guidelines.md).
 - **PR Template (optional)**: The script checks for `.github/pull_request_template.md` to structure the PR description.
 - **Environment Variables**:
-   - `GITHUB_TOKEN`: GitHub API token for authentication.
-   - `OPENAI_TOKEN`: OpenAI API token for generating PR descriptions and accessing one of the required models.
+   - `GITHUB_TOKEN`: GitHub API token for authentication. Set this in the `.env` file located in the root of the **target repository** where the script will be executed.
+   - `OPENAI_TOKEN`: OpenAI API token for generating PR descriptions and accessing one of the required models. Set this in the `.env` file located in the root of the **target repository** where the script will be executed.
 
 ## Example Workflow
 
