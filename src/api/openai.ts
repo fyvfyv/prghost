@@ -1,46 +1,64 @@
-import { oneLineTrim } from 'common-tags';
-import OpenAI from 'openai';
+import { oneLineTrim } from "common-tags";
 
 const MODELS_PRIORITY = [
-    'gpt-4o',
-    'gpt-4o-mini',
-    'gpt-4-turbo',
-    'gpt-3.5-turbo',
-    'gpt-3.5',
-    'gpt-3',
+    "gpt-4o",
+    "gpt-4o-mini",
+    "gpt-4-turbo",
+    "gpt-3.5-turbo",
+    "gpt-3.5",
+    "gpt-3",
 ];
 
+const OPENAI_API_URL = "https://api.openai.com/v1";
+
 export class OpenAIService {
-    private readonly api: OpenAI;
+    private readonly apiKey: string;
 
     constructor(apiKey: string) {
-        this.api = new OpenAI({ apiKey });
+        this.apiKey = apiKey;
     }
 
     public async getPRDescription(
         prompt: string,
         options: PRDescriptionOptions = {},
-    ): Promise<string | null> {
+    ): Promise<string> {
         try {
             const model = await this.getModel();
 
-            const completion = await this.api.chat.completions.create({
-                model,
-                messages: [
-                    {
-                        role: 'system',
-                        content: this.getSystemPrompt(options),
-                    },
-                    {
-                        role: 'user',
-                        content: prompt,
-                    },
-                ],
+            const response = await fetch(`${OPENAI_API_URL}/chat/completions`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.apiKey}`,
+                },
+                body: JSON.stringify({
+                    model,
+                    messages: [
+                        {
+                            role: "system",
+                            content: this.getSystemPrompt(options),
+                        },
+                        {
+                            role: "user",
+                            content: prompt,
+                        },
+                    ],
+                }),
             });
+
+            if (!response.ok) {
+                throw new Error(`OpenAI API error: ${response.statusText}`);
+            }
+
+            const completion = await response.json();
+
+            if (!completion.choices?.[0]?.message?.content) {
+                throw new Error("Invalid response format from OpenAI API");
+            }
 
             return completion.choices[0].message.content;
         } catch (error) {
-            console.error('Error generating PR description');
+            console.error("Error generating PR description:", error);
             throw error;
         }
     }
@@ -85,22 +103,36 @@ export class OpenAIService {
         const models = await this.fetchModelsList();
 
         if (!models || models.length === 0) {
-            throw new Error('No models available');
+            throw new Error("No models available");
         }
 
-        // Get the highest priority model that is available
         const model = MODELS_PRIORITY.find((model) => models?.includes(model));
 
         if (!model) {
-            throw new Error('No suitable model found');
+            throw new Error("No suitable model found");
         }
 
         return model;
     }
 
     private async fetchModelsList(): Promise<string[]> {
-        const models = await this.api.models.list();
-        return models.data.map((model) => model.id);
+        const response = await fetch(`${OPENAI_API_URL}/models`, {
+            headers: {
+                Authorization: `Bearer ${this.apiKey}`,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error(`OpenAI API error: ${response.statusText}`);
+        }
+
+        const result = await response.json();
+
+        if (!Array.isArray(result?.data)) {
+            throw new Error("Invalid response format from OpenAI API");
+        }
+
+        return result.data.map((model: { id: string }) => model.id);
     }
 }
 
