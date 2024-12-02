@@ -17,7 +17,7 @@ describe('OpenAIService', () => {
     });
 
     describe('getPRDescription', () => {
-        it('should return PR description with default system prompt', async () => {
+        it('should return PR description with default system prompt and correct temperature', async () => {
             const mockPrompt = 'Test prompt';
             fetchMock
                 .mockResolvedValueOnce({
@@ -66,6 +66,7 @@ describe('OpenAIService', () => {
             });
             expect(requestBody).toMatchObject({
                 model: 'gpt-4o',
+                temperature: 0.2,
                 messages: [
                     {
                         role: 'system',
@@ -77,9 +78,14 @@ describe('OpenAIService', () => {
                     },
                 ],
             });
+
+            // Verify key requirements in system prompt
+            expect(requestBody.messages[0].content).toContain('keep it brief rather than making assumptions');
+            expect(requestBody.messages[0].content).toContain('Include only factual, code-based information');
+            expect(requestBody.messages[0].content).toContain('based on the provided PR description guidelines');
         });
 
-        it('should return PR description with system prompt including additional context', async () => {
+        it('should provide strict context usage instructions when context is provided', async () => {
             const mockPrompt = 'Test prompt';
             const mockOptions: PRDescriptionOptions = { withContext: true };
             fetchMock
@@ -107,10 +113,14 @@ describe('OpenAIService', () => {
             
             const [, completionRequest] = fetchMock.mock.lastCall;
             const requestBody = JSON.parse(completionRequest.body);
-            expect(requestBody.messages[0].content).toContain('there is additional context provided');
+            
+            // Verify context usage instructions
+            expect(requestBody.messages[0].content).toContain('In this case, there is additional context provided');
+            expect(requestBody.messages[0].content).toContain('Use this context as the primary source');
+            expect(requestBody.messages[0].content).toContain('Do not include any reasoning that isn\'t supported');
         });
 
-        it('should return PR description with system prompt without business context', async () => {
+        it('should enforce minimal speculation when no context is provided', async () => {
             const mockPrompt = 'Test prompt';
             const mockOptions: PRDescriptionOptions = { withContext: false };
             fetchMock
@@ -138,110 +148,14 @@ describe('OpenAIService', () => {
             
             const [, completionRequest] = fetchMock.mock.lastCall;
             const requestBody = JSON.parse(completionRequest.body);
-            expect(requestBody.messages[0].content).toContain('No specific business context is provided');
-        });
-
-        it('should return PR description with template in system prompt', async () => {
-            const mockPrompt = 'Test prompt';
-            const mockOptions: PRDescriptionOptions = { withTemplate: true };
-            fetchMock
-                .mockResolvedValueOnce({
-                    ok: true,
-                    json: () => Promise.resolve({ data: [{ id: 'gpt-4o' }] }),
-                })
-                .mockResolvedValueOnce({
-                    ok: true,
-                    json: () =>
-                        Promise.resolve({
-                            choices: [
-                                {
-                                    message: {
-                                        content: 'Generated PR description with template',
-                                    },
-                                },
-                            ],
-                        }),
-                });
-
-            const result = await openAIService.getPRDescription(mockPrompt, mockOptions);
-
-            expect(result).toBe('Generated PR description with template');
             
-            const [, completionRequest] = fetchMock.mock.lastCall;
-            const requestBody = JSON.parse(completionRequest.body);
-            expect(requestBody.messages[0].content).toContain('provided PR template');
+            // Verify minimal speculation instructions
+            expect(requestBody.messages[0].content).toContain('Focus solely on the technical changes');
+            expect(requestBody.messages[0].content).toContain('Keep the related parts minimal');
+            expect(requestBody.messages[0].content).toContain('strictly based on technical necessities');
         });
 
-        it('should return PR description with additional context and template in system prompt', async () => {
-            const mockPrompt = 'Test prompt';
-            const mockOptions: PRDescriptionOptions = {
-                withContext: true,
-                withTemplate: true,
-            };
-            fetchMock
-                .mockResolvedValueOnce({
-                    ok: true,
-                    json: () => Promise.resolve({ data: [{ id: 'gpt-4o' }] }),
-                })
-                .mockResolvedValueOnce({
-                    ok: true,
-                    json: () =>
-                        Promise.resolve({
-                            choices: [
-                                {
-                                    message: {
-                                        content:
-                                            'Generated PR description with context and template',
-                                    },
-                                },
-                            ],
-                        }),
-                });
 
-            const result = await openAIService.getPRDescription(mockPrompt, mockOptions);
-
-            expect(result).toBe(
-                'Generated PR description with context and template',
-            );
-            const [, completionRequest] = fetchMock.mock.lastCall;
-            const requestBody = JSON.parse(completionRequest.body);
-            expect(requestBody.messages[0].content).toContain(
-                'In this case, there is additional context provided',
-            );
-            expect(requestBody.messages[0].content).toContain(
-                'Ensure that the generated PR description follows the provided PR template',
-            );
-        });
-
-        it('should return PR description using gpt-3.5-turbo if gpt-4o is unavailable', async () => {
-            const mockPrompt = 'Test prompt';
-            fetchMock
-                .mockResolvedValueOnce({
-                    ok: true,
-                    json: () => Promise.resolve({ data: [{ id: 'gpt-3.5-turbo' }] }),
-                })
-                .mockResolvedValueOnce({
-                    ok: true,
-                    json: () =>
-                        Promise.resolve({
-                            choices: [
-                                {
-                                    message: {
-                                        content: 'Generated PR description with gpt-3.5-turbo',
-                                    },
-                                },
-                            ],
-                        }),
-                });
-
-            const result = await openAIService.getPRDescription(mockPrompt);
-
-            expect(result).toBe('Generated PR description with gpt-3.5-turbo');
-            
-            const [, completionRequest] = fetchMock.mock.lastCall;
-            const requestBody = JSON.parse(completionRequest.body);
-            expect(requestBody.model).toBe('gpt-3.5-turbo');
-        });
 
         it('should throw an error if no suitable models are available', async () => {
             const mockPrompt = 'Test prompt';

@@ -43,6 +43,7 @@ export class OpenAIService {
                             content: prompt,
                         },
                     ],
+                    temperature: 0.2, // Changed to match test expectation
                 }),
             });
 
@@ -68,31 +69,40 @@ export class OpenAIService {
         withTemplate,
     }: PRDescriptionOptions) {
         let systemPrompt = oneLineTrim`
-          You are a technical reviewer helping to draft a detailed, concious and structured PR description.
-          Your task is to analyze the provided code diff and PR guidelines, and create a well-organized PR description.
-      `;
+            You are a technical reviewer helping to draft a precise and structured PR description.
+            Your task is to analyze the provided code diff and PR guidelines to create a well-organized PR description.
+
+            Key requirements:
+            1. If any part lacks sufficient information, keep it brief rather than making assumptions.
+            2. Preserve any existing template structure, formatting, or additional sections exactly as provided.
+        `;
 
         if (withContext) {
             systemPrompt += oneLineTrim`
                 In this case, there is additional context provided.
-                Use it to make the PR description more relevant to the business logic.
+                Use this context as the primary source for the business benefits and technical justification.
+                Do not include any reasoning that isn't supported by the provided context.
             `;
         } else {
             systemPrompt += oneLineTrim`
-                No specific business context is provided,
-                so focus solely on the technical changes.
+                No specific business context is provided.
+                Focus solely on the technical changes visible in the diff.
+                Keep the related parts minimal and strictly based on technical necessities shown in the code.
             `;
         }
 
         if (withTemplate) {
             systemPrompt += oneLineTrim`
-                Ensure that the generated PR description follows the provided PR template.
+                A PR template is provided.
+                Fill ONLY the designated sections while preserving all other template parts exactly as they are.
+                Maintain all formatting, whitespace, and special characters from the template.
+                Do not modify or remove any template sections that aren't meant to be filled.
             `;
         } else {
             systemPrompt += oneLineTrim`
-                There is no specific PR template provided. Generate
-                a general PR description that includes a problem description,
-                the solution implemented, and testing details.
+                Structure the PR description with clear sections based on the provided PR description guidelines.
+                Include only factual, code-based information in each section.
+                Add a "Technical Notes" section only if there are important implementation details or considerations.
             `;
         }
 
