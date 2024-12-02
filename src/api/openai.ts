@@ -43,7 +43,7 @@ export class OpenAIService {
                             content: prompt,
                         },
                     ],
-                    temperature: 0.2, // Changed to match test expectation
+                    temperature: 0.3,
                 }),
             });
 
