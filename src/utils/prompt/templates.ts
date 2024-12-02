@@ -1,4 +1,4 @@
-import { stripIndent } from "common-tags";
+import { stripIndent } from 'common-tags';
 
 export const baseTemplate = stripIndent`
   Generate a PR description based on the following information.

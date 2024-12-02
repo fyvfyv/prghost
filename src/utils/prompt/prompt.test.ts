@@ -6,8 +6,10 @@ describe('getPrompt', () => {
         const result = getPrompt({
             guidelines: "Follow the team's coding standards.",
             diff: 'Modified function getPrompt to handle edge cases.',
-            context: 'The change addresses issue #123 and improves code quality.',
-            prTemplate: 'Please mention the issue number and provide testing instructions.',
+            context:
+                'The change addresses issue #123 and improves code quality.',
+            prTemplate:
+                'Please mention the issue number and provide testing instructions.',
         });
 
         const expectedOutput = `
@@ -41,7 +43,8 @@ Note: Only modify the sections meant to be filled. Keep all other parts of the t
         const result = getPrompt({
             guidelines: "Follow the team's coding standards.",
             diff: 'Modified function getPrompt to handle edge cases.',
-            prTemplate: 'Please mention the issue number and provide testing instructions.',
+            prTemplate:
+                'Please mention the issue number and provide testing instructions.',
         });
 
         const expectedOutput = `
@@ -72,7 +75,8 @@ Note: Only modify the sections meant to be filled. Keep all other parts of the t
         const result = getPrompt({
             guidelines: "Follow the team's coding standards.",
             diff: 'Modified function getPrompt to handle edge cases.',
-            context: 'The change addresses issue #123 and improves code quality.',
+            context:
+                'The change addresses issue #123 and improves code quality.',
         });
 
         const expectedOutput = `

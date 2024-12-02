@@ -1,25 +1,25 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended"],
-  "prHourlyLimit": 0,
-  "assignees": ["fyvfyv"],
-  "reviewers": ["fyvfyv"],
-  "labels": ["📌 dependencies"],
-  "commitMessagePrefix": "⬆️",
-  "commitMessageAction": "Upgrade",
-  "major": {
-    "automerge": false
-  },
-  "packageRules": [
-    {
-      "updateTypes": ["pin"],
-      "commitMessagePrefix": "📌",
-      "commitMessageAction": "Pin"
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "extends": ["config:recommended"],
+    "prHourlyLimit": 0,
+    "assignees": ["fyvfyv"],
+    "reviewers": ["fyvfyv"],
+    "labels": ["📌 dependencies"],
+    "commitMessagePrefix": "⬆️",
+    "commitMessageAction": "Upgrade",
+    "major": {
+        "automerge": false
     },
-    {
-      "updateTypes": ["rollback"],
-      "commitMessagePrefix": "⬇️",
-      "commitMessageAction": "Downgrade"
-    }
-  ]
+    "packageRules": [
+        {
+            "updateTypes": ["pin"],
+            "commitMessagePrefix": "📌",
+            "commitMessageAction": "Pin"
+        },
+        {
+            "updateTypes": ["rollback"],
+            "commitMessagePrefix": "⬇️",
+            "commitMessageAction": "Downgrade"
+        }
+    ]
 }

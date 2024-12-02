@@ -1,15 +1,15 @@
-import { oneLineTrim } from "common-tags";
+import { oneLineTrim } from 'common-tags';
 
 const MODELS_PRIORITY = [
-    "gpt-4o",
-    "gpt-4o-mini",
-    "gpt-4-turbo",
-    "gpt-3.5-turbo",
-    "gpt-3.5",
-    "gpt-3",
+    'gpt-4o',
+    'gpt-4o-mini',
+    'gpt-4-turbo',
+    'gpt-3.5-turbo',
+    'gpt-3.5',
+    'gpt-3',
 ];
 
-const OPENAI_API_URL = "https://api.openai.com/v1";
+const OPENAI_API_URL = 'https://api.openai.com/v1';
 
 export class OpenAIService {
     private readonly apiKey: string;
@@ -26,20 +26,20 @@ export class OpenAIService {
             const model = await this.getModel();
 
             const response = await fetch(`${OPENAI_API_URL}/chat/completions`, {
-                method: "POST",
+                method: 'POST',
                 headers: {
-                    "Content-Type": "application/json",
+                    'Content-Type': 'application/json',
                     Authorization: `Bearer ${this.apiKey}`,
                 },
                 body: JSON.stringify({
                     model,
                     messages: [
                         {
-                            role: "system",
+                            role: 'system',
                             content: this.getSystemPrompt(options),
                         },
                         {
-                            role: "user",
+                            role: 'user',
                             content: prompt,
                         },
                     ],
@@ -54,12 +54,12 @@ export class OpenAIService {
             const completion = await response.json();
 
             if (!completion.choices?.[0]?.message?.content) {
-                throw new Error("Invalid response format from OpenAI API");
+                throw new Error('Invalid response format from OpenAI API');
             }
 
             return completion.choices[0].message.content;
         } catch (error) {
-            console.error("Error generating PR description:", error);
+            console.error('Error generating PR description:', error);
             throw error;
         }
     }
@@ -113,13 +113,13 @@ export class OpenAIService {
         const models = await this.fetchModelsList();
 
         if (!models || models.length === 0) {
-            throw new Error("No models available");
+            throw new Error('No models available');
         }
 
         const model = MODELS_PRIORITY.find((model) => models?.includes(model));
 
         if (!model) {
-            throw new Error("No suitable model found");
+            throw new Error('No suitable model found');
         }
 
         return model;
@@ -139,7 +139,7 @@ export class OpenAIService {
         const result = await response.json();
 
         if (!Array.isArray(result?.data)) {
-            throw new Error("Invalid response format from OpenAI API");
+            throw new Error('Invalid response format from OpenAI API');
         }
 
         return result.data.map((model: { id: string }) => model.id);
